@@ -25,5 +25,6 @@ public class PlayerStat : MonoBehaviour
     public void TakeDamage(int damage)
     {
         hp -= damage;
+        UIManager.Instance.SetHPUI((float)hp / maxHP);
     }
 }
