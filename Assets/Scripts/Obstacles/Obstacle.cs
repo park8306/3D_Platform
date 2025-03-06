@@ -4,12 +4,11 @@ using UnityEngine;
 
 public class Obstacle : MonoBehaviour
 {
-    [SerializeField]
-    private int damage = 10;
+    public ObstacleData obstacleData;
 
-    PlayerStat playerStat = null;
+    private PlayerStat playerStat = null;
 
-    Coroutine hitCoroutine = null;
+    private Coroutine hitCoroutine = null;
 
     // 플레이어가 장애물 안에 들어온 경우 데미지를 줄 수 있도록 playerStat에 저장해둠
     private void OnTriggerEnter(Collider other)
@@ -43,7 +42,7 @@ public class Obstacle : MonoBehaviour
     {
         while (true)
         {
-            playerStat.TakeDamage(damage);
+            playerStat.TakeDamage(obstacleData.damage);
 
             Debug.Log(playerStat.HP);
             yield return new WaitForSeconds(1.0f);
