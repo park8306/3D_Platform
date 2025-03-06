@@ -1,6 +1,8 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 public class UIManager : MonoBehaviour
 {
@@ -8,6 +10,7 @@ public class UIManager : MonoBehaviour
     public static UIManager Instance { get => instance; private set { } }
 
     public HPUI hpUI;
+    public DisplayInfoUI displayInfoUI;
 
     private void Awake()
     {
@@ -17,10 +20,24 @@ public class UIManager : MonoBehaviour
     private void Start()
     {
         hpUI = FindObjectOfType<HPUI>();
+        displayInfoUI = FindObjectOfType<DisplayInfoUI>();
+
+        displayInfoUI.SetActive(false);
     }
 
     public void SetHPUI(float hpRatio)
     {
         hpUI.SetHPLine(hpRatio);
+    }
+
+    public void ShowObstacleInfo(ObstacleData obstacleData)
+    {
+        displayInfoUI.SetActive(true);
+        displayInfoUI.ShowDisplay(obstacleData);
+    }
+
+    internal void DisableObstacleInfo()
+    {
+        displayInfoUI.SetActive(false);
     }
 }
