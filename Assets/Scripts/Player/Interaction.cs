@@ -29,6 +29,8 @@ public class Interaction : MonoBehaviour
             // 만약 반직선에 닿은 장애물이 있다면
             if (Physics.Raycast(ray, out hit, maxDistance, obstacleLayer))
             {
+                if (hit.collider.GetComponent<Obstacle>() == null) return;
+
                 ObstacleData obstacleData = hit.collider.GetComponent<Obstacle>().obstacleData;
 
                 // 화면에 이름과 설명 띄워주기
