@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
@@ -131,5 +132,11 @@ public class PlayerController : MonoBehaviour
         {
             Gizmos.DrawRay(ray[i].origin, Vector3.down * rayDistance);
         }
+    }
+
+    public void JumpingPlatform(float jumpForce)
+    {
+        _rigidbody.velocity = Vector3.zero;
+        _rigidbody.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
     }
 }
