@@ -57,6 +57,7 @@ public class PlayerController : MonoBehaviour
 
     private void Move()
     {
+        // 캐릭터의 앞쪽 방향과 오른쪽 방향을 이용하여 rigidbody의 velocity 값을 변경 시켜준다.
         Vector3 dir = transform.forward * inputDir.y + transform.right * inputDir.x;
         dir *= moveSpeed;
         dir.y = _rigidbody.velocity.y;
@@ -65,12 +66,15 @@ public class PlayerController : MonoBehaviour
 
     private bool IsGround()
     {
-        // 땅위에 존재하는지 확인하기 위한 ray 만들기
+        // 중심점과 떨어진 거리
+        float distance = GetComponent<CapsuleCollider>().radius;
+
+        // 중심을 기준으로 콜라이더의 radius 만큼의 떨어진 ray를 4개 생성
         Ray[] rays = { 
-            new Ray(transform.position + (transform.forward * 0.2f) + (transform.up * 0.01f), Vector3.down  ),
-            new Ray(transform.position + (-transform.forward * 0.2f) + (transform.up * 0.01f), Vector3.down  ),
-            new Ray(transform.position + (transform.right * 0.2f) + (transform.up * 0.01f), Vector3.down  ),
-            new Ray(transform.position + (-transform.right * 0.2f) + (transform.up * 0.01f), Vector3.down)
+            new Ray(transform.position + (transform.forward * distance) + (transform.up * 0.01f), Vector3.down  ),
+            new Ray(transform.position + (-transform.forward * distance) + (transform.up * 0.01f), Vector3.down  ),
+            new Ray(transform.position + (transform.right * distance) + (transform.up * 0.01f), Vector3.down  ),
+            new Ray(transform.position + (-transform.right * distance) + (transform.up * 0.01f), Vector3.down)
         };
 
         // 모든 레이들을 순회하면서 땅과 닿는지 확인
