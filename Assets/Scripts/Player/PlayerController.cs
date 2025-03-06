@@ -11,7 +11,9 @@ public class PlayerController : MonoBehaviour
     private Rigidbody _rigidbody;
 
     private Vector2 inputDir;       // 입력 받은 방향
+    private Vector2 mouseDelta;
 
+    private float mouseSensitivity = 0.1f;
     [SerializeField]
     private float moveSpeed;
     [SerializeField]
@@ -21,14 +23,36 @@ public class PlayerController : MonoBehaviour
 
     public LayerMask groundLayer;
 
+    [SerializeField]
+    private Transform cameraContainerTr;
+
     private void Awake()
     {
         _rigidbody = GetComponent<Rigidbody>();
+        if (cameraContainerTr == null)
+            cameraContainerTr = transform.GetChild(0);
+    }
+
+    private void LateUpdate()
+    {
+        Look();
     }
 
     private void FixedUpdate()
     {
         Move();
+    }
+
+    private void Look()
+    {
+        // 마우스의 변화량을 바탕으로 회전
+        float deltaX = -mouseDelta.y * mouseSensitivity;
+        float deltaY = mouseDelta.x * mouseSensitivity;
+
+        // 카메라를 가지고 있는 부모 transform을 회전 시킴
+        cameraContainerTr.localEulerAngles += new Vector3(deltaX, 0, 0);
+
+        transform.eulerAngles += new Vector3(0, deltaY, 0);
     }
 
     private void Move()
@@ -69,7 +93,6 @@ public class PlayerController : MonoBehaviour
         if(context.phase == InputActionPhase.Performed)
         {
             inputDir = context.ReadValue<Vector2>();
-            Debug.Log(inputDir);
         }
         else if(context.phase == InputActionPhase.Canceled)
         {
@@ -88,10 +111,8 @@ public class PlayerController : MonoBehaviour
 
     public void OnLook(InputAction.CallbackContext context)
     {
-        if (context.phase == InputActionPhase.Performed)
-        {
-
-        }
+        mouseDelta = context.ReadValue<Vector2>();
+        Debug.Log(mouseDelta);
     }
 
     private void OnDrawGizmos()
