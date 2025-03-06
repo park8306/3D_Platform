@@ -116,7 +116,6 @@ public class PlayerController : MonoBehaviour
     public void OnLook(InputAction.CallbackContext context)
     {
         mouseDelta = context.ReadValue<Vector2>();
-        Debug.Log(mouseDelta);
     }
 
     private void OnDrawGizmos()
