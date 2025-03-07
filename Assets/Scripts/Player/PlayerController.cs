@@ -15,10 +15,8 @@ public class PlayerController : MonoBehaviour
     private Vector2 mouseDelta;
 
     private float mouseSensitivity = 0.1f;
-    [SerializeField]
-    private float moveSpeed;
-    [SerializeField]
-    private float jumpForce;
+
+    private PlayerStat playerStat;
     [SerializeField]
     private float rayDistance = 0.1f;
 
@@ -30,6 +28,7 @@ public class PlayerController : MonoBehaviour
     private void Awake()
     {
         _rigidbody = GetComponent<Rigidbody>();
+        playerStat = GetComponent<PlayerStat>();
         if (cameraContainerTr == null)
             cameraContainerTr = transform.GetChild(0);
     }
@@ -53,6 +52,8 @@ public class PlayerController : MonoBehaviour
         // 카메라를 가지고 있는 부모 transform을 회전 시킴
         cameraContainerTr.localEulerAngles += new Vector3(deltaX, 0, 0);
 
+        float x = cameraContainerTr.localEulerAngles.x;
+
         transform.eulerAngles += new Vector3(0, deltaY, 0);
     }
 
@@ -60,7 +61,7 @@ public class PlayerController : MonoBehaviour
     {
         // 캐릭터의 앞쪽 방향과 오른쪽 방향을 이용하여 rigidbody의 velocity 값을 변경 시켜준다.
         Vector3 dir = transform.forward * inputDir.y + transform.right * inputDir.x;
-        dir *= moveSpeed;
+        dir *= playerStat.moveSpeed;
         dir.y = _rigidbody.velocity.y;
         _rigidbody.velocity = dir;
     }
@@ -84,6 +85,8 @@ public class PlayerController : MonoBehaviour
             // 하나라도 땅과 닿아있으면 true 반환
             if (Physics.Raycast(rays[i], rayDistance, groundLayer))
             {
+                playerStat.remainJumpCount = playerStat.maxJumpCount;
+                Debug.Log(playerStat.remainJumpCount);
                 return true;
             }
         }
@@ -110,8 +113,19 @@ public class PlayerController : MonoBehaviour
         // 점프 버튼을 눌렀다면 점프 실행
         if(context.phase == InputActionPhase.Started && IsGround())
         {
-            _rigidbody.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
+            Jump();
         }
+        else if(context.phase == InputActionPhase.Started && playerStat.remainJumpCount != 0)
+        {
+            Jump();
+        }
+    }
+
+    private void Jump()
+    {
+        _rigidbody.velocity = new Vector3(_rigidbody.velocity.x, 0, _rigidbody.velocity.z);
+        _rigidbody.AddForce(Vector3.up * playerStat.jumpForce, ForceMode.Impulse);
+        playerStat.remainJumpCount--;
     }
 
     public void OnLook(InputAction.CallbackContext context)

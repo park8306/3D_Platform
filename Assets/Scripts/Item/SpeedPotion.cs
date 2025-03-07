@@ -4,8 +4,13 @@ using UnityEngine;
 
 public class SpeedPotion : Item
 {
+    protected override void Start()
+    {
+        base.Start();
+
+    }
     public override void Use()
     {
-        throw new System.NotImplementedException();
+        playerStat.MoveSpeedCo = playerStat.StartCoroutine(playerStat.IncreaseMoveSpeed(itemData));
     }
 }

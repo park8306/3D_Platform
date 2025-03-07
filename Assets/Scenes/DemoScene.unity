@@ -980,7 +980,19 @@ MonoBehaviour:
     m_ActionId: c2b7ea8d-e74f-4a49-9fca-1e0901a381ee
     m_ActionName: Player/SlotChange[/Keyboard/r]
   - m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 709764486}
+        m_TargetAssemblyTypeName: PlayerInventory, Assembly-CSharp
+        m_MethodName: OnUseItem
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
     m_ActionId: 1229a783-7140-4e6a-9c82-aee27b62a7cb
     m_ActionName: Player/ItemUse[/Keyboard/q]
   m_NeverAutoSwitchControlSchemes: 0
@@ -1000,8 +1012,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 540b9b85f47318e4da1667efd32bc1fc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveSpeed: 5
-  jumpForce: 4
   rayDistance: 0.1
   groundLayer:
     serializedVersion: 2
@@ -1020,6 +1030,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   hp: 100
+  moveSpeed: 5
+  jumpForce: 4
 --- !u!114 &709764485
 MonoBehaviour:
   m_ObjectHideFlags: 0

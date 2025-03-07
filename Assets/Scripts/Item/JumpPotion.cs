@@ -4,8 +4,13 @@ using UnityEngine;
 
 public class JumpPotion : Item
 {
+    protected override void Start()
+    {
+        base.Start();
+
+    }
     public override void Use()
     {
-        throw new System.NotImplementedException();
+        playerStat.JumpForceCo = playerStat.StartCoroutine(playerStat.IncreaseJumpCount(itemData));
     }
 }

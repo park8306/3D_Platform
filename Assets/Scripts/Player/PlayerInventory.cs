@@ -67,4 +67,33 @@ public class PlayerInventory : MonoBehaviour
     }
 
     // Q를 이용하여 아이템을 사용할 수 있게 구현
+    public void OnUseItem(InputAction.CallbackContext context)
+    {
+        if(context.phase == InputActionPhase.Started)
+        {
+            // 사용한 아이템
+            Item useItem = itemArray[curIndex];
+            // 아이템 효과 적용
+            useItem.Use();
+            // 아이템 삭제 후 정렬
+            SortItemArray();
+
+            itemCount--;
+            ActiveItemSlot?.Invoke();
+        }
+    }
+
+    // 아이템 배열 정렬
+    private void SortItemArray()
+    {
+        itemArray[curIndex] = null;
+        if (curIndex != itemArray.Length-1)
+        {
+            for (int i = curIndex + 1; i < itemArray.Length; i++)
+            {
+                itemArray[i - 1] = itemArray[i];
+                itemArray[i] = null;
+            }
+        }
+    }
 }
