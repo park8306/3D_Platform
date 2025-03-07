@@ -10,6 +10,7 @@ public class PlayerInventory : MonoBehaviour
     public event Action ActiveItemSlot;
     public event Action useItemEvent;
 
+    [SerializeField]
     private int curIndex;
     public int CurIndex { 
         get => curIndex; 
@@ -59,7 +60,7 @@ public class PlayerInventory : MonoBehaviour
     // R을 이용하여 아이템 슬롯을 이동시킬 수 있게 구현
     public void ChangeSlot(InputAction.CallbackContext context)
     {
-        if(context.phase == InputActionPhase.Started)
+        if(context.phase == InputActionPhase.Started && itemCount > 0)
         {
             CurIndex++;
             ActiveItemSlot?.Invoke();
@@ -69,7 +70,7 @@ public class PlayerInventory : MonoBehaviour
     // Q를 이용하여 아이템을 사용할 수 있게 구현
     public void OnUseItem(InputAction.CallbackContext context)
     {
-        if(context.phase == InputActionPhase.Started)
+        if(context.phase == InputActionPhase.Started && itemCount > 0)
         {
             // 사용한 아이템
             Item useItem = itemArray[curIndex];
@@ -79,6 +80,7 @@ public class PlayerInventory : MonoBehaviour
             SortItemArray();
 
             itemCount--;
+            CheckItemIndex();
             ActiveItemSlot?.Invoke();
         }
     }
@@ -95,5 +97,18 @@ public class PlayerInventory : MonoBehaviour
                 itemArray[i] = null;
             }
         }
+    }
+    
+    // itemArray[curIndex]가 null인지 체크하고 null이면 curIndex를 변경
+    private void CheckItemIndex()
+    {
+        if (itemCount == 0)
+        {
+            curIndex = 0;
+            return;
+        }
+
+        if (itemArray[curIndex] == null)
+            CurIndex--;
     }
 }
