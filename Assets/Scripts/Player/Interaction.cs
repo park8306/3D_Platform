@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using TMPro.EditorUtilities;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class Interaction : MonoBehaviour
 {
@@ -12,7 +13,17 @@ public class Interaction : MonoBehaviour
     [SerializeField]
     private float maxDistance;  // 반직선의 최대 거리
 
-    public LayerMask obstacleLayer;
+    public LayerMask itemLayer;
+
+    private Item item;
+    private ItemData itemData;
+
+    private PlayerInventory playerInventory;
+
+    private void Start()
+    {
+        playerInventory = GetComponent<PlayerInventory>();
+    }
 
     // Update is called once per frame
     void Update()
@@ -27,21 +38,24 @@ public class Interaction : MonoBehaviour
             Ray ray = Camera.main.ScreenPointToRay(new Vector3(Screen.width / 2, Screen.height / 2, 0));
 
             // 만약 반직선에 닿은 장애물이 있다면
-            if (Physics.Raycast(ray, out hit, maxDistance, obstacleLayer))
+            if (Physics.Raycast(ray, out hit, maxDistance, itemLayer))
             {
-                if (hit.collider.GetComponent<Obstacle>() == null) return;
+                if (hit.collider.GetComponent<Item>() == null) return;
 
-                ObstacleData obstacleData = hit.collider.GetComponent<Obstacle>().obstacleData;
+                item = hit.collider.GetComponent<Item>();
+                itemData = item.itemData;
 
                 // 화면에 이름과 설명 띄워주기
-                if (obstacleData != null)
+                if (itemData != null)
                 {
-                    UIManager.Instance.ShowObstacleInfo(obstacleData);
+                    UIManager.Instance.ShowItemInfo(itemData);
                 }
             }
             else
             {
-                UIManager.Instance.DisableObstacleInfo();
+                UIManager.Instance.DisableItemInfo();
+                item = null;
+                itemData = null;
             }
         }
     }
@@ -53,5 +67,13 @@ public class Interaction : MonoBehaviour
         Ray ray = Camera.main.ScreenPointToRay(new Vector3(Screen.width / 2, Screen.height / 2, 0));
 
         Gizmos.DrawRay(ray);
+    }
+
+    public void OnInteraction(InputAction.CallbackContext context)
+    {
+        if(context.phase == InputActionPhase.Started && item != null)
+        {
+            playerInventory.AddItem(item);
+        }
     }
 }

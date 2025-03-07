@@ -9,11 +9,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 03f1310d5a0a1fc4db6e591445227f33, type: 3}
+  m_Script: {fileID: 11500000, guid: 565233c46dc77dc42acd727102dd69d3, type: 3}
   m_Name: Heal
   m_EditorClassIdentifier: 
-  itemName: "\uD68C\uBCF5 \uC544\uC774\uD15C"
-  description: "10\uC758 \uCCB4\uB825\uC744 \uD68C\uBCF5\uD55C\uB2E4"
+  itemName: "\uD68C\uBCF5 \uD3EC\uC158"
+  description: "10\uC758 \uCCB4\uB825\uC744 \uD68C\uBCF5\uD574\uC8FC\uB294 \uD3EC\uC158"
   type: 0
   value: 10
   duration: 0
+  icon: {fileID: 21300000, guid: 77a0bb03532730c4bb395143705a3a56, type: 3}

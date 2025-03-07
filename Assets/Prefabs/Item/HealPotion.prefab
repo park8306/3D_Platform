@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 4041207702378158449}
   - component: {fileID: 428411826080301122}
   - component: {fileID: 2708744675499538492}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: HealthKit
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -93,7 +93,8 @@ GameObject:
   m_Component:
   - component: {fileID: 3587629306276960879}
   - component: {fileID: 1034343336645944023}
-  m_Layer: 0
+  - component: {fileID: 7517182432829071438}
+  m_Layer: 8
   m_Name: HealPotion
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -137,3 +138,16 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.53489304, y: 0.26466393, z: 0.44021797}
   m_Center: {x: -0.0077400208, y: 0.13208282, z: -0.008555412}
+--- !u!114 &7517182432829071438
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6613796321089726620}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8b7a61f3ccb2774409e18b1b4276a0eb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemData: {fileID: 11400000, guid: 93a92e6a039b4744ab2d82c1241c1cd3, type: 2}

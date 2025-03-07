@@ -30,13 +30,13 @@ public class UIManager : MonoBehaviour
         hpUI.SetHPLine(hpRatio);
     }
 
-    public void ShowObstacleInfo(ObstacleData obstacleData)
+    public void ShowItemInfo(ItemData itemData)
     {
         displayInfoUI.SetActive(true);
-        displayInfoUI.ShowDisplay(obstacleData);
+        displayInfoUI.ShowDisplay(itemData);
     }
 
-    internal void DisableObstacleInfo()
+    internal void DisableItemInfo()
     {
         displayInfoUI.SetActive(false);
     }

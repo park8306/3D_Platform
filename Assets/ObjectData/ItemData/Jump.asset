@@ -9,11 +9,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 03f1310d5a0a1fc4db6e591445227f33, type: 3}
+  m_Script: {fileID: 11500000, guid: 565233c46dc77dc42acd727102dd69d3, type: 3}
   m_Name: Jump
   m_EditorClassIdentifier: 
-  itemName: "\uC810\uD504 \uBB3C\uC57D"
-  description: "20\uCD08 \uB3D9\uC548 \uC810\uD504 \uD69F\uC218\uAC00 1\uD68C \uC99D\uAC00\uD55C\uB2E4."
+  itemName: "\uC810\uD504 \uD3EC\uC158"
+  description: "20\uCD08\uB3D9\uC548 \uC810\uD504 \uD69F\uC218\uB97C 1\uD68C \uC99D\uAC00\uC2DC\uCF1C\uC900\uB2E4."
   type: 1
   value: 1
   duration: 20
+  icon: {fileID: 21300000, guid: 1351fff5d58cae049817bcc83d9efac6, type: 3}

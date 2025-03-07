@@ -12,10 +12,10 @@ public class DisplayInfoUI : MonoBehaviour
     [SerializeField]
     private TextMeshProUGUI description;
 
-    public void ShowDisplay(ObstacleData obstacleData)
+    public void ShowDisplay(ItemData ItemData)
     {
-        displayName.text = obstacleData.displayName;
-        description.text = obstacleData.description;
+        displayName.text = ItemData.itemName;
+        description.text = ItemData.description;
     }
 
     public void SetActive(bool isEnabled)

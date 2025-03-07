@@ -18,4 +18,6 @@ public class ItemData : ScriptableObject
     public ItemType type;   // 아이템 타입
     public float value;     // 타입마다 다르게 적용될 값
     public float duration;  // 지속 시간
+
+    public Sprite icon;
 }

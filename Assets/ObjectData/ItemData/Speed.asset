@@ -9,11 +9,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 03f1310d5a0a1fc4db6e591445227f33, type: 3}
+  m_Script: {fileID: 11500000, guid: 565233c46dc77dc42acd727102dd69d3, type: 3}
   m_Name: Speed
   m_EditorClassIdentifier: 
-  itemName: "\uC2A4\uD53C\uB4DC \uBB3C\uC57D"
-  description: "10\uCD08 \uB3D9\uC548 \uC2A4\uD53C\uB4DC\uAC00 \uC99D\uAC00\uD55C\uB2E4."
+  itemName: "\uC2A4\uD53C\uB4DC \uD3EC\uC158"
+  description: "20\uCD08\uB3D9\uC548 \uC2A4\uD53C\uB4DC\uB97C \uC99D\uAC00\uC2DC\uCF1C\uC900\uB2E4."
   type: 2
   value: 3
-  duration: 10
+  duration: 20
+  icon: {fileID: 21300000, guid: c5f1390798f7f6e4aabe998135b7945b, type: 3}
