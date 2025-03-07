@@ -15,6 +15,7 @@ public class PlayerController : MonoBehaviour
     private Vector2 mouseDelta;
 
     private float mouseSensitivity = 0.1f;
+    private float camCurXRot;
 
     private PlayerStat playerStat;
     [SerializeField]
@@ -46,11 +47,12 @@ public class PlayerController : MonoBehaviour
     private void Look()
     {
         // 마우스의 변화량을 바탕으로 회전
-        float deltaX = -mouseDelta.y * mouseSensitivity;
+        camCurXRot = -mouseDelta.y * mouseSensitivity;
+        camCurXRot = Mathf.Clamp(camCurXRot, -85f, 85f);
         float deltaY = mouseDelta.x * mouseSensitivity;
 
         // 카메라를 가지고 있는 부모 transform을 회전 시킴
-        cameraContainerTr.localEulerAngles += new Vector3(deltaX, 0, 0);
+        cameraContainerTr.localEulerAngles += new Vector3(camCurXRot, 0, 0);
 
         float x = cameraContainerTr.localEulerAngles.x;
 
