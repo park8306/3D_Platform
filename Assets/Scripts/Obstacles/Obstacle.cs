@@ -38,6 +38,33 @@ public class Obstacle : MonoBehaviour
         }
     }
 
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.transform.CompareTag("Player"))
+        {
+            playerStat = collision.transform.GetComponent<PlayerStat>();
+
+            if (playerStat != null && hitCoroutine == null)
+            {
+                hitCoroutine = StartCoroutine(Hit());
+            }
+        }
+    }
+
+    private void OnCollisionExit(Collision collision)
+    {
+        if (collision.transform.CompareTag("Player"))
+        {
+            playerStat = null;
+
+            if (hitCoroutine != null)
+            {
+                StopCoroutine(hitCoroutine);
+                hitCoroutine = null;
+            }
+        }
+    }
+
     public IEnumerator Hit()
     {
         while (true)

@@ -21,8 +21,10 @@ public class PlayerController : MonoBehaviour
 
     public LayerMask groundLayer;
 
-    [SerializeField]
     private Transform cameraContainerTr;
+
+    [SerializeField]
+    private Transform firstPersonCameraContainerTr;
 
     private float minXRot = -85f;
     private float maxXRot = 85f;
@@ -36,7 +38,13 @@ public class PlayerController : MonoBehaviour
     private AnimationController animationController;
     private Transform characterTr;
 
+    [SerializeField]
     private bool isThirdPersonView = false; // 3인칭 시점인지 확인
+
+    [SerializeField]
+    private Transform hangingRayOriginTr;  // 매달림을 판단하는 반직선의 위치
+    public LayerMask hangingLayerMask;
+    private bool isHanging = false;
 
     private void Awake()
     {
@@ -44,14 +52,13 @@ public class PlayerController : MonoBehaviour
         playerStat = GetComponent<PlayerStat>();
 
         animationController = GetComponentInChildren<AnimationController>(true);
-        animationController.gameObject.SetActive(false);
+        animationController.gameObject.SetActive(isThirdPersonView);
         characterTr = animationController.transform;
 
-        if (cameraContainerTr == null)
-            cameraContainerTr = transform.GetChild(0);
+        thirdPersonCameraContainerTr.gameObject.SetActive(isThirdPersonView);
+        firstPersonCameraContainerTr.gameObject.SetActive(!isThirdPersonView);
 
-        thirdPersonCameraContainerTr.gameObject.SetActive(false);
-        cameraContainerTr.gameObject.SetActive(true);
+        cameraContainerTr = isThirdPersonView ? thirdPersonCameraContainerTr : firstPersonCameraContainerTr;
     }
 
     private void LateUpdate()
@@ -62,6 +69,26 @@ public class PlayerController : MonoBehaviour
     private void FixedUpdate()
     {
         Move();
+        Hanging();
+    }
+
+    // 매달릴 수 있는지 확인하는 함수
+    private void Hanging()
+    {
+        if (isHanging) return;
+
+        Vector3 rayDir = isThirdPersonView ? characterTr.forward : new Vector3(firstPersonCameraContainerTr.forward.x, 0, firstPersonCameraContainerTr.forward.z);
+        Ray ray = new Ray(hangingRayOriginTr.position, rayDir);
+
+        if(Physics.Raycast(ray, 0.8f, hangingLayerMask))
+        {
+            _rigidbody.useGravity = false;
+            _rigidbody.velocity = Vector3.zero;
+            isHanging = true;
+
+            if(isThirdPersonView)
+                animationController.HangingAnimation(true);
+        }
     }
 
     private void Look()
@@ -84,7 +111,7 @@ public class PlayerController : MonoBehaviour
 
             deltaY = mouseDelta.x * mouseSensitivity;
             //카메라를 가지고 있는 부모 transform을 회전 시킴
-            cameraContainerTr.localEulerAngles = new Vector3(-camCurXRot, 0, 0);
+            firstPersonCameraContainerTr.localEulerAngles = new Vector3(-camCurXRot, 0, 0);
 
             transform.eulerAngles += new Vector3(0, deltaY, 0);
         }
@@ -92,9 +119,10 @@ public class PlayerController : MonoBehaviour
 
     private void Move()
     {
+        if (isHanging) return;
 
         Vector3 dir;
-        if(isThirdPersonView)
+        if (isThirdPersonView)
         {
             // 3인칭 카메라
             dir = thirdPersonCameraContainerTr.forward * inputDir.y + thirdPersonCameraContainerTr.right * inputDir.x;
@@ -102,7 +130,7 @@ public class PlayerController : MonoBehaviour
         else
         {
             // 1인칭 카메라
-            dir = cameraContainerTr.forward * inputDir.y + transform.right * inputDir.x;
+            dir = firstPersonCameraContainerTr.forward * inputDir.y + transform.right * inputDir.x;
         }
 
         // 캐릭터의 앞쪽 방향과 오른쪽 방향을 이용하여 rigidbody의 velocity 값을 변경 시켜준다.
@@ -178,12 +206,38 @@ public class PlayerController : MonoBehaviour
 
     private void Jump()
     {
+        if (isHanging) return;
+
         _rigidbody.velocity = new Vector3(_rigidbody.velocity.x, 0, _rigidbody.velocity.z);
         _rigidbody.AddForce(Vector3.up * playerStat.jumpForce, ForceMode.Impulse);
         playerStat.remainJumpCount--;
 
         if(isThirdPersonView)
             animationController.JumpAnimation();
+    }
+
+    private void Climbing()
+    {
+        if (isThirdPersonView)
+        {
+            // Hanging 애니메이션 취소
+            animationController.HangingAnimation(false);
+            // Climbing 애니메이션 플레이
+            animationController.ClimbingAnimation();
+
+            StartCoroutine(CheckClimbing());
+        }
+    }
+
+    // Climbing 애니메이션이 끝났는지 확인
+    private IEnumerator CheckClimbing()
+    {
+        yield return new WaitForSeconds(0.7f);
+        yield return new WaitForSeconds(animationController.GetCurrentAnimTime() - 0.7f);
+
+        _rigidbody.useGravity = true;
+        transform.position = new Vector3(transform.position.x, transform.position.y + 1.8f, transform.position.z);
+        isHanging = false;
     }
 
     public void OnLook(InputAction.CallbackContext context)
@@ -199,13 +253,23 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    public void OnClimbing(InputAction.CallbackContext context)
+    {
+        if(context.phase == InputActionPhase.Started)
+        {
+            Climbing();
+        }
+    }
+
     // 시점 변경 설정
     private void ChangeView()
     {
         isThirdPersonView = !isThirdPersonView;
 
         thirdPersonCameraContainerTr.gameObject.SetActive(isThirdPersonView);
-        cameraContainerTr.gameObject.SetActive(!isThirdPersonView);
+        firstPersonCameraContainerTr.gameObject.SetActive(!isThirdPersonView);
+        cameraContainerTr = isThirdPersonView ? thirdPersonCameraContainerTr : firstPersonCameraContainerTr;
+
         animationController.gameObject.SetActive(isThirdPersonView);
     }
 
@@ -222,6 +286,9 @@ public class PlayerController : MonoBehaviour
         {
             Gizmos.DrawRay(ray[i].origin, Vector3.down * rayDistance);
         }
+
+        Vector3 dir = isThirdPersonView ? characterTr.forward : new Vector3(firstPersonCameraContainerTr.forward.x, 0, firstPersonCameraContainerTr.forward.z);
+        Gizmos.DrawRay(hangingRayOriginTr.position, dir * 1f);
     }
 
     public void JumpingPlatform(float jumpForce)

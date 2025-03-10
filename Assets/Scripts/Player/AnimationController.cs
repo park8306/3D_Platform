@@ -29,4 +29,20 @@ public class AnimationController : MonoBehaviour
     {
         animator.SetTrigger("Jump");
     }
+
+    public void HangingAnimation(bool isHanging)
+    {
+        animator.SetBool("IsHanging", isHanging);
+    }
+
+    public void ClimbingAnimation()
+    {
+        animator.SetTrigger("Climbing");
+    }
+
+    public float GetCurrentAnimTime()
+    {
+        Debug.Log(animator.GetCurrentAnimatorStateInfo(0).IsName("Climbing"));
+        return animator.GetCurrentAnimatorStateInfo(0).length;
+    }
 }
