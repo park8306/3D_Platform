@@ -1,11 +1,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.Experimental.Rendering;
 using UnityEngine.InputSystem;
-using UnityEngine.Scripting.APIUpdating;
 
 public class PlayerController : MonoBehaviour
 {
@@ -18,6 +15,7 @@ public class PlayerController : MonoBehaviour
     private float camCurXRot;
 
     private PlayerStat playerStat;
+
     [SerializeField]
     private float rayDistance = 0.1f;
 
@@ -26,12 +24,34 @@ public class PlayerController : MonoBehaviour
     [SerializeField]
     private Transform cameraContainerTr;
 
+    private float minXRot = -85f;
+    private float maxXRot = 85f;
+
+    [SerializeField]
+    private Transform thirdPersonCameraContainerTr;
+
+    private float thirdMinXRot = -60f;
+    private float thirdMaxXRot = 15f;
+
+    private AnimationController animationController;
+    private Transform characterTr;
+
+    private bool isThirdPersonView = false; // 3인칭 시점인지 확인
+
     private void Awake()
     {
         _rigidbody = GetComponent<Rigidbody>();
         playerStat = GetComponent<PlayerStat>();
+
+        animationController = GetComponentInChildren<AnimationController>(true);
+        animationController.gameObject.SetActive(false);
+        characterTr = animationController.transform;
+
         if (cameraContainerTr == null)
             cameraContainerTr = transform.GetChild(0);
+
+        thirdPersonCameraContainerTr.gameObject.SetActive(false);
+        cameraContainerTr.gameObject.SetActive(true);
     }
 
     private void LateUpdate()
@@ -47,25 +67,58 @@ public class PlayerController : MonoBehaviour
     private void Look()
     {
         // 마우스의 변화량을 바탕으로 회전
-        camCurXRot = -mouseDelta.y * mouseSensitivity;
-        camCurXRot = Mathf.Clamp(camCurXRot, -85f, 85f);
-        float deltaY = mouseDelta.x * mouseSensitivity;
+        camCurXRot += mouseDelta.y * mouseSensitivity;
 
-        // 카메라를 가지고 있는 부모 transform을 회전 시킴
-        cameraContainerTr.localEulerAngles += new Vector3(camCurXRot, 0, 0);
+        float deltaY;
+        if (isThirdPersonView)
+        {
+            // 3인칭 카메라
+            camCurXRot = Mathf.Clamp(camCurXRot, thirdMinXRot, thirdMaxXRot);
+            deltaY = thirdPersonCameraContainerTr.localEulerAngles.y + mouseDelta.x * mouseSensitivity;
+            thirdPersonCameraContainerTr.localEulerAngles = new Vector3(-camCurXRot, deltaY, 0);
+        }
+        else
+        {
+            //1인칭 카메라
+            camCurXRot = Mathf.Clamp(camCurXRot, minXRot, maxXRot);
 
-        float x = cameraContainerTr.localEulerAngles.x;
+            deltaY = mouseDelta.x * mouseSensitivity;
+            //카메라를 가지고 있는 부모 transform을 회전 시킴
+            cameraContainerTr.localEulerAngles = new Vector3(-camCurXRot, 0, 0);
 
-        transform.eulerAngles += new Vector3(0, deltaY, 0);
+            transform.eulerAngles += new Vector3(0, deltaY, 0);
+        }
     }
 
     private void Move()
     {
+
+        Vector3 dir;
+        if(isThirdPersonView)
+        {
+            // 3인칭 카메라
+            dir = thirdPersonCameraContainerTr.forward * inputDir.y + thirdPersonCameraContainerTr.right * inputDir.x;
+        }
+        else
+        {
+            // 1인칭 카메라
+            dir = cameraContainerTr.forward * inputDir.y + transform.right * inputDir.x;
+        }
+
         // 캐릭터의 앞쪽 방향과 오른쪽 방향을 이용하여 rigidbody의 velocity 값을 변경 시켜준다.
-        Vector3 dir = transform.forward * inputDir.y + transform.right * inputDir.x;
         dir *= playerStat.moveSpeed;
         dir.y = _rigidbody.velocity.y;
         _rigidbody.velocity = dir;
+
+        if(inputDir.magnitude > 0 && isThirdPersonView)
+        {
+            dir.Normalize();
+            Vector3 lookDir = new Vector3(dir.x, 0, dir.z);
+            characterTr.forward = lookDir;
+        }
+
+        if (isThirdPersonView)
+            animationController.RunAnimation();
     }
 
     private bool IsGround()
@@ -128,11 +181,32 @@ public class PlayerController : MonoBehaviour
         _rigidbody.velocity = new Vector3(_rigidbody.velocity.x, 0, _rigidbody.velocity.z);
         _rigidbody.AddForce(Vector3.up * playerStat.jumpForce, ForceMode.Impulse);
         playerStat.remainJumpCount--;
+
+        if(isThirdPersonView)
+            animationController.JumpAnimation();
     }
 
     public void OnLook(InputAction.CallbackContext context)
     {
         mouseDelta = context.ReadValue<Vector2>();
+    }
+
+    public void OnChangeView(InputAction.CallbackContext context)
+    {
+        if(context.phase == InputActionPhase.Started)
+        {
+            ChangeView();
+        }
+    }
+
+    // 시점 변경 설정
+    private void ChangeView()
+    {
+        isThirdPersonView = !isThirdPersonView;
+
+        thirdPersonCameraContainerTr.gameObject.SetActive(isThirdPersonView);
+        cameraContainerTr.gameObject.SetActive(!isThirdPersonView);
+        animationController.gameObject.SetActive(isThirdPersonView);
     }
 
     private void OnDrawGizmos()
@@ -154,5 +228,10 @@ public class PlayerController : MonoBehaviour
     {
         _rigidbody.velocity = Vector3.zero;
         _rigidbody.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
+    }
+
+    public Vector2 GetInputDir()
+    {
+        return inputDir;
     }
 }
