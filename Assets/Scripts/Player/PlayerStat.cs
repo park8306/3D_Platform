@@ -46,6 +46,11 @@ public class PlayerStat : MonoBehaviour
     {
         HP -= damage;
         UIManager.Instance.SetHPUI((float)hp / maxHP);
+
+        if(HP <= 0)
+        {
+            UIManager.Instance.DefeatUIActive();
+        }
     }
 
     // 체력 회복

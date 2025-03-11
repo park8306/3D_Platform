@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
+using UnityEngine.SceneManagement;
 
 public class UIManager : MonoBehaviour
 {
@@ -11,6 +12,8 @@ public class UIManager : MonoBehaviour
 
     public HPUI hpUI;
     public DisplayInfoUI displayInfoUI;
+    public GameObject victoryUI;
+    public GameObject defeatUI;
 
     private void Awake()
     {
@@ -21,7 +24,11 @@ public class UIManager : MonoBehaviour
     {
         hpUI = FindObjectOfType<HPUI>();
         displayInfoUI = FindObjectOfType<DisplayInfoUI>();
+        victoryUI = transform.Find("VictoryUI").gameObject;
+        defeatUI = transform.Find("DefeatUI").gameObject;
 
+        victoryUI.SetActive(false);
+        defeatUI.SetActive(false);
         displayInfoUI.SetActive(false);
     }
 
@@ -39,5 +46,38 @@ public class UIManager : MonoBehaviour
     internal void DisableItemInfo()
     {
         displayInfoUI.SetActive(false);
+    }
+
+    public void VictoryUIActive()
+    {
+        if (!victoryUI.activeInHierarchy)
+        {
+            Time.timeScale = 0f;
+            victoryUI.SetActive(true);
+        }
+    }
+
+    public void DefeatUIActive()
+    {
+        if (!defeatUI.activeInHierarchy)
+        {
+            Time.timeScale = 0f;
+            defeatUI.SetActive(true);
+        }
+    }
+
+    public void RetryBtn()
+    {
+        Time.timeScale = 1f;
+        SceneManager.LoadScene("MainScene");
+    }
+
+    public void EndBtn()
+    {
+#if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;
+#else
+        Application.Quit();
+#endif
     }
 }
