@@ -50,6 +50,8 @@ public class PlayerController : MonoBehaviour
     [SerializeField]
     private Transform hipTr;
 
+    private Coroutine ClimbingCo;
+
     private void Awake()
     {
         _rigidbody = GetComponent<Rigidbody>();
@@ -222,14 +224,14 @@ public class PlayerController : MonoBehaviour
 
     private void Climbing()
     {
-        if (isThirdPersonView)
+        if (isThirdPersonView && ClimbingCo == null)
         {
             // Hanging 애니메이션 취소
             animationController.HangingAnimation(false);
             // Climbing 애니메이션 플레이
             animationController.ClimbingAnimation();
 
-            StartCoroutine(CheckClimbing());
+            ClimbingCo = StartCoroutine(CheckClimbing());
         }
     }
 
@@ -260,6 +262,7 @@ public class PlayerController : MonoBehaviour
 
         _rigidbody.useGravity = true;
         isHanging = false;
+        ClimbingCo = null;
     }
 
     public void OnLook(InputAction.CallbackContext context)
