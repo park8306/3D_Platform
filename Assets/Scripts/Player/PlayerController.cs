@@ -253,7 +253,7 @@ public class PlayerController : MonoBehaviour
         while (time < waitTime)
         {
             time += Time.deltaTime;
-            _rigidbody.AddForce(Vector3.up * 0.25f, ForceMode.Force);
+            _rigidbody.AddForce(Vector3.up * 0.07f, ForceMode.Force);
 
             yield return null;
         }
