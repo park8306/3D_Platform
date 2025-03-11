@@ -40,6 +40,7 @@ public class AnimationController : MonoBehaviour
         animator.SetTrigger("Climbing");
     }
 
+    // 현재 재생중인 애니메이션의 총 시간
     public float GetCurrentAnimTime()
     {
         Debug.Log(animator.GetCurrentAnimatorStateInfo(0).IsName("Climbing"));

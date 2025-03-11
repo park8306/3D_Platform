@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Security;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -45,6 +46,9 @@ public class PlayerController : MonoBehaviour
     private Transform hangingRayOriginTr;  // 매달림을 판단하는 반직선의 위치
     public LayerMask hangingLayerMask;
     private bool isHanging = false;
+
+    [SerializeField]
+    private Transform hipTr;
 
     private void Awake()
     {
@@ -232,11 +236,29 @@ public class PlayerController : MonoBehaviour
     // Climbing 애니메이션이 끝났는지 확인
     private IEnumerator CheckClimbing()
     {
-        yield return new WaitForSeconds(0.7f);
-        yield return new WaitForSeconds(animationController.GetCurrentAnimTime() - 0.7f);
+        float animTransitionTime = 0.11f;
+        float curAnimationTime;
+        float waitTime;
+        float time = 0;
+
+        // Hanging 애니메이션에서 Climbing 애니메이션으로 전환될 때 까지 기다림
+        yield return new WaitForSeconds(animTransitionTime);
+
+        // Climbing 애니메이션의 재생 시간을 가지고 옴
+        curAnimationTime = animationController.GetCurrentAnimTime();
+        // Climbing의 애니메이션의 실제 재생 시간을 알기위해 Climbing 애니메이션 재생 시간에서 전환한 시간만큼 빼줌
+        waitTime = curAnimationTime - animTransitionTime;
+
+        // 매 프레임마다 위로 올라 올 수 있게 AddForce를 위쪽 방향으로 적용시켜줌
+        while (time < waitTime)
+        {
+            time += Time.deltaTime;
+            _rigidbody.AddForce(Vector3.up * 0.25f, ForceMode.Force);
+
+            yield return null;
+        }
 
         _rigidbody.useGravity = true;
-        transform.position = new Vector3(transform.position.x, transform.position.y + 1.8f, transform.position.z);
         isHanging = false;
     }
 
